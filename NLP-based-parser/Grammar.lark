@@ -1,0 +1,224 @@
+start: sentence (conjunction sentence)*
+
+sentence: noun_phrase verb_phrase   // declarative sentences
+        | verb_phrase              // imperative sentences
+        | aux_verb noun_phrase verb_phrase   // binary (yes-no) interrogative sentences
+        | wh_noun_phrase verb_phrase         // wh-subject structure
+        | wh_noun_phrase aux_verb noun_phrase verb_phrase   // wh-non-subject structure
+
+// noun_phrase rules
+noun_phrase:determiner* nominal (conjunction noun_phrase)*
+
+nominal: noun+
+       | nominal post_modifier*
+
+determiner: det
+          | noun_phrase  "'s"   // expressing possession
+          | cardinal* ordinal* quantifier* adj_phrase*
+
+
+noun: proper_noun
+    | common_noun
+    | abstract_noun
+    | pronoun
+
+
+
+adj_phrase: adj (conjunction adj_phrase)*
+          | adverb adj (conjunction adj_phrase)*                         // (head-final type) // from wikipedia on adjective phrases
+          | adj prepositional_phrase  (conjunction adj_phrase)*          // (head-initial type)
+          | adverb adj prepositional_phrase  (conjunction adj_phrase)* // (head-medival type)
+
+
+post_modifier: prepositional_phrase
+             | gerund_verb_phrase
+             | relative_clause
+
+
+gerund_verb_phrase: gerundv
+                  | gerundv noun_phrase
+                  | gerundv prepositional_phrase
+                  | gerundv noun_phrase prepositional_phrase
+
+relative_clause: relative_pronoun verb_phrase
+
+wh_noun_phrase: wh_word
+              | wh_word noun_phrase
+              | wh_word aux_verb noun_phrase
+
+
+// verb_phrase rules
+verb_phrase: verb
+           | verb noun_phrase (conjunction noun_phrase)*
+           | verb prepositional_phrase (conjunction prepositional_phrase)*
+           | verb noun_phrase prepositional_phrase (conjunction prepositional_phrase)*
+           | verb adj_phrase (conjunction adj_phrase)*
+           | verb_phrase adverb (conjunction adverb)*    // sometime adverb follows noun_phrase inside verb_phrase
+
+
+verb: aux_verb* main_verb?
+
+// exclamation mark to keep the "not" in the tree
+!aux_verb: modal_aux
+        | modal_aux "not"
+        | aux
+        | aux "not"
+
+conjunction: co_conj                  // co-ordinating conjunction
+           | sub_conj                // subordinating conjunction
+
+prepositional_phrase: preposition noun_phrase (conjunction preposition)*
+
+
+// terminals
+
+det: DET
+cardinal: CARDINAL
+ordinal: ORDINAL
+quantifier: QUANTIFIER
+
+adj: ADJ
+
+adverb: ADVERB
+      | REG_TIME
+
+proper_noun: BUILDING_NAME
+           | FACULTY_NAME
+           | REGISTRATION_NUM
+           | POPULAR_STUDENT
+           | COMPANY_NAME
+           | COURSE_NAME
+           | DAY_MONTH_NAME
+
+common_noun: REG_BUILDING
+          | REG_FACULTY
+          | REG_REG_NUM
+          | REG_STUDENT
+          | REG_COMPANY
+          | REG_COURSE
+          | MISC
+
+
+abstract_noun:ABSTRACT_NOUN
+pronoun:PRONOUN
+relative_pronoun:RELATIVE_PRONOUN
+
+wh_word: WH_WORD
+gerundv: GERUNDV
+preposition: PREPOSITION
+main_verb: MAIN_VERB
+aux: AUX
+modal_aux: MODAL_AUX
+
+co_conj: CO_CONJ
+sub_conj: SUB_CONJ
+
+
+DET: /th(e|is|ese|ose|at)?/i | /a(n)?/i | "my"i | "mine"i | "our"i
+CARDINAL: "one"i | "two"i | "three"i | "four"i | "five"i   // restricting to five
+ORDINAL: "first"i | "second"i | "third"i | "fourth"i | "next"i | "last"i | "past"i | /(an)?other/i  // restring to fourth
+QUANTIFIER: "many"i | "much"i | "more"i | "most"i | "some"i | "few"i | "several"i | "little"i
+          | "any"i | "all"i | "each"i
+
+ADJ: "scientific"i | "difficult"i | "understandable"i | "easy"i | "hard"i | "tough"i | "associate"i | "educated"i
+    | "qualified"i | "online"i | "offline"i | "hence"i | "therefore"i | "thus"i | /large(r|st)?/i | /small(er|est)?/
+    | "outside"i
+
+ADVERB: "institutionally"i | "intelligently"i
+
+
+BUILDING_NAME: "IIITB"i | "Ramanujan"i | "Bhaskara"i | "Leelavati" | "Aryabhatta"i | "Viswesvaraya"i
+
+FACULTY_NAME: "Amit Chattopadhyay"i | "Amit Prakash"i | "Amrita Mishra"i | "Arti"i | "Ashish Choudhary"i
+            | "Balaji Parthasarathy"i | "Ashok"i | "Bidisha"i | "Chandrashekhar Ramanathan"i | "Chetan Parikh"i
+            | "Debabrata Das"i | "Dinesh"i | "Srinivasa Prasanna"i | "Srinivasaraghavan"i | "Raghavan"i |"Girish Kumar"i
+            | "Janaki Srinivasan"i | "Jaya Sreevalsan Nair"i | "Jyotsna"i | "Subramaniam"i | "Dinesha"i | "Madhav Rao"i
+            | "Manish Gupta"i | "Manisha"i | "Meenakshi"i | "Mohan Ram"i | "Nanditha Rao"i | "Neelam Sinha"i | "Pradeesha"i
+            | "Preeti"i | "Priyanka Das"i | "Radha Parikh"i | "Ramesh Sundararaman"i | "S Rajagopalan"i | "Sachit Rao"i
+            | "Samar"i | "Shiva Kumar Malapaka"i | "Srisha Rao"i | "Srinath Srinivas"i | "Srinivas Vivek"i | "Subhajit Sen"
+            | "Subir"i | "Sujit"i | "Srikanth"i | "Thangaraju"i |"Tricha"i | "Uttam Kumar"i | "Ramasubramanian"i | "Muralidhara"i
+            | "Sridhar"i | "Valsala"i | "Vinod"i | "Viswanath"i | "Vivek Yadav"i | "Yashavant Kanetkar"i
+
+REGISTRATION_NUM: /IMT[0-9]+/i | /MT[0-9]+/i | /MS[0-9]+/i | /DS[0-9]+/i | /PH[0-9]+/i
+
+POPULAR_STUDENT: "Tejas Kotha"i | "Shreyas"i | "Aditya Paliwal"i | "Aditya Hegde"i | "Biswesh"i
+                | "Krishna"i | "Shyam"i | "Karthik"i | "Jishnu"i
+
+COMPANY_NAME: "Microsoft"i | "Facebook"i | "Dell"i | "Intel"i | "Directi"i | "Infosys"i | "Accenture"i | "Amazon"i
+            | "American Express"i | "ANZ"i | "bloomreach"i | "Cerner"i | "Cisco"i | "cyient"i | "Dreamworks"i
+            | "hp"i | "HSBC"i | "IBM"i | "JohnsonJohnson"i | "Tata Power"i | "Morgan Stanley"i | "Samsung"i
+            | "SAP"i | "Walmart"i | "Zeiss"i | "linkedin"i | "nvidia"i | "GE"i
+
+COURSE_NAME: "ML"i | "MML"i | "VR"i | "Advanced Visual Recognition"i | "NLP"i | "PGM"i | "MAS"i | "Computer Graphics"i
+            | "Computer Networks"i | "Cybersecurity"i | "DSA"i | "DAA"i | "Automata theory"i | "software engineering"i
+            | "Math"i | "Optimization and Cognition"i | "IOT"i | "AIML"i | "VLSI"i | "Networking and Communications"i
+
+DAY_MONTH_NAME: /Monday(s)?/i | /Tuesday(s)?/i | /Wednesday(s)?/i | /Thursday(s)?/i | /Friday(s)?/i | /Saturday(s)?/i | /Sunday(s)?/i
+              | /Fall/i | /Spring/i | /Jan(uary)?/i | /Feb(ruary)?/i | /March/i | /April/i | /May/i | /Jun(e)?/i | /Jul(y)?/i | /Aug(ust)?/i
+              | /Sep(tember)?/i | /Oct(ober)?/i | /Nov(ember)?/i | /Dec(ember)?/i | /[0-9]+(:)?[0-9]*(am|pm)?/i
+
+
+REG_BUILDING: /building(s)/i | /college/i | /(convocation\s|lecture\s|exam)?hall(s)?/i | /infrastructure/i | /class(es|room|rooms)?/i
+            | /cafeteria/i | /mess/i | /canteen/i |  /campus/i | /hostel(room)?/i
+
+REG_FACULTY: /professor(s)?/i | /prof(s)?(.)?/i | /teacher(s)?/i | /instructor(s)?/i | /lecturer(s)?/i | /researcher(s)?/i
+            | /guide(s)?/i | /mentor(s)?/i | /scholar(s)?/i | /faculty/i
+
+REG_REG_NUM: /roll num(ber)?/i | /reg(istration)? num(ber)?/i | /id card/i | /identity/i
+
+REG_STUDENT: /student(s)?/i | /boy(s)?/i | /girl(s)?/i | /male/i | /female/i | /alumn(i|us)?/i | /people/i | /imtech(s)?/i | /mtech(s)?/i
+           | /ms/i | /phd/i | /digital society/i | /sac/i | /co(-)?ordinator/i | /class representative(s)?/i | /club leader(s)?/
+           | /committee member(s)?/i | /food committee/i | /internet committee/i | /placement commmittee/i | /sports committee/i
+
+
+REG_COMPANY: /recruiter(s)?/i | /recruiting officer/i | /HR/i | /technical co(-)?ordinator/i | /support staff/i | /staff/i
+            | /CEO/i | /COO/i | /placement officer/i
+
+REG_COURSE: /course(s)?/i | /subject(s)?/i | /syllabus/i | /reference(s)?/i | /paper(s)?/i | /semester(s)?/i| /exam(s)?/i| /lecture(s)?/i
+
+// in this subset these mainly act as adverb rather than common nouns
+REG_TIME: /Morning(s)?/i | /Evening(s)?/i | /Afternoon(s)?/i | "today"i | "tomorrow"i | "yesterday"i | "now"i |"time"i
+
+MISC: /rule(s)?/i | /regulation(s)?/i
+
+ABSTRACT_NOUN: /recruitment(s)?/i | /placement(s)?/i | /difficulty/i | /hardness/i | /assistance/i | /examination(s)?/i | /permission(s)?/i | /academics/i
+
+
+PRONOUN: /he(r)?/i | /hi(m|s)?/i | "she"i | /I(t)?/i | "me"i | "we"i | /th(e(y|m|re)+|is|at)?/i
+        | /h(im|er)?self/i | /themselves/i | /ourselves/i | /oneself/i | /itself/i | /myself/i
+        | /someone/i | /somebody/i
+
+RELATIVE_PRONOUN: "that"i | /wh(o|om|ose|ich)?/i
+
+WH_WORD: "how"i | /wh(o(m|se)?|ich|en|ere|y|at)?/i
+
+
+GERUNDV: "starting"i | "ending"i | "being"i | "having"i | "making"i | "recording"i | "taking"i | "teaching"i
+
+PREPOSITION: "at" | "from"i |  "on"i | "in"i | "under" | "above"i | "below"i | "for"i | "since"i | /with(out)?/i
+            | "into"i | "onto" | "out of" | "to" | "relating to"i | "regarding"i | "by"i
+
+
+MAIN_VERB: /become(s)?/i | "became"i | "becoming"i | /take(s|n)?/i | "taking"i | "took"i | /make(s)?/i | "making"i | "made"i
+          | /choose(s)?/i | "choosing"i | /chose(n)?/i  | /withdraw(s|n|ing)?/i  | "withdrew"i
+          |  /teach(es|ing)?/i | "taught"i | /come(s)?/i | "coming"i | "came"i | /call(s|ed|ing)?/i | /hold(s|ing)?/i
+          | "held"i | /deal(s|ing)?/i | "dealt"i  | /start(s|ed|ing)?/i | "tell"i | "told"i | /conduct(s|ed|ing)?/i
+          | /offer(s|ed|ing)?/i | /require(s|d|ing)?/i | /understand(s|ing)?/i | "understood"i | /explain(s|ed|ing)?/i
+          | /examine(d|ing)?/i | /grant(s|ed|ing)?/i | /permit(s)?/i | "permitted"i | "permitting"i | /follow(s|ed|ing)?/i | /suceed(s|ed|ing)?/i
+          | /fail(s|ed|ing)?/i | /work(s|ed|ing)?/i | /schedule(s|d)?/i| /scheduling/i | /reside(s|d)?/i | /residing/i | /allow(s|ed|ing)?/i
+          | /apply(ing)?/i | /applie(s|d)+/i | /giving/i | /give(s)/i | /gave/i
+
+AUX: "am"i | "is"i | "are"i | "was"i | "were"i | /be(en|ing)?/i | "have"i | "has"i
+    | "had"i | "having"i | /do(es)?/i | "did"i | "doing"i | "done"i
+
+MODAL_AUX: "will"i | "would"i | "can"i | "could"i | "must"i | "ought"i |"may"i | "might"i | "shall"i | "should"i
+
+CO_CONJ: "and"i | "but"i | "or"i | "nor"i | "also"i | "either-or"i | "neither-nor"i
+SUB_CONJ: "After"i | "because"i | "if"i | "that"i | "though"i | "although"i | "till"i | "before"i | "unless"i | "as"i
+          | "while"i | "whereas"i
+
+%import common.WORD
+%ignore /\s+/
+%ignore "."
+%ignore ","
+%ignore /\?+/
